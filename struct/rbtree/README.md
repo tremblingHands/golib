@@ -1,3 +1,24 @@
+
+自定义结构体接口实现如下
+
+```go
+
+type Item interface {
+    Cmp(i Item) bool
+}
+
+type Int int
+
+func (x Int) Cmp(y Item) bool {
+    return x<y.(Int)
+}
+
+
+```
+
+
+```go
+
 package main
 
 import (
@@ -49,4 +70,4 @@ func pp(now *rbtree.Node) {
     pp(now.Right)
 
 }
-
+```
