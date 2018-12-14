@@ -226,19 +226,42 @@ func (t *Rbtree) Max(x *Node) *Node{
     return x
 }
 
-func (t *Rbtree) Search(x *Node) *Node {
+
+func (t *Rbtree) Search(key Item) (*Node, bool) {
+    if key == nil {
+        return nil
+    }
+    return t.search(&Node{t.Nil,t.Nil,t.Nil,Red,key})
+}
+
+func (t *Rbtree) search(x *Node) (*Node, bool) {
     p := t.Root
+    flag := false
+    parent := p
     for p != t.Nil {
+        parent = p
         if Less(x, p) {
             p = p.Left
         }else if Less(p, x){
             p = p.Right
         }else {
+            flag = true
+            parent = p
             break
         }
     }
-    return p
+    return parent, flag
 }
+
+
+/*
+func (t *Rbtree) Successor(key Item) *Node {
+    if key == nil {
+        return nil
+    }       
+    return t.successor(&Node{t.Nil,t.Nil,t.Nil,Red,key})
+}  
+*/
 
 func (t *Rbtree) Successor(x *Node) *Node {
     if x == t.Nil {
@@ -279,8 +302,8 @@ func (t *Rbtree) Delete(key Item) *Node {
 
 
 func (t *Rbtree) delete(key *Node) *Node {
-    z := t.Search(key)
-    if z == t.Nil {
+    z, flag := t.search(key)
+    if flag == false {
         return t.Nil
     }
     ret := &Node{t.Nil, t.Nil, t.Nil, z.Color, z.Item}
