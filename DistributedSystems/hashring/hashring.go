@@ -5,11 +5,12 @@ import(
     "github.com/tremblingHands/golib/struct/rbtree"
     "strconv"
     "crypto/sha1"
+    "fmt"
 )
 
 type vnode struct {
     value uint32 
-    item map [uint32]bool
+    item map [string]bool
     parent  *node
 }
 
@@ -29,12 +30,12 @@ func newnode(id string) *node{
 func newvnode(value uint32 ) *vnode{
     return &vnode {
         value : value,
-        item : make(map[uint32]bool),
+        item : make(map[string]bool),
     }
 }
 
-func (x vnode) Cmp(y rbtree.Item) bool {
-    return x.value < y.(vnode).value
+func (x *vnode) Cmp(y rbtree.Item) bool {
+    return x.value < y.(*vnode).value
 }
 
 func NewHashRing() *HashRing {
@@ -72,6 +73,16 @@ func (r *HashRing) InsertNode(id string, weight int) {
 
 }
 
+func (r *HashRing) GetNode(id string) {
+    n := r.nodeArray[id]
+    for _, child := range n.child {
+        for it, _ := range child.item {
+            fmt.Print(it)
+        }
+    }
+    fmt.Println()
+}
+
 func (r *HashRing) DeleteNode(id string) {
     if  _, ok := r.nodeArray[id]; !ok  {
         return
@@ -83,7 +94,7 @@ func (r *HashRing) DeleteNode(id string) {
             next = r.vnodeArray.Successor(next)
         }
         for s, _  :=  range child.item {
-            next.Item.(vnode).item[s] = true
+            next.Item.(*vnode).item[s] = true
         }
         r.vnodeArray.Delete(child)
     }
@@ -97,7 +108,7 @@ func (r *HashRing) InsertItem(id string) {
     if flag == false {
         child = r.vnodeArray.Successor(child)
     }
-    child.Item.(vnode).item[value] = true 
+    child.Item.(*vnode).item[id] = true 
 }
 
 func (r *HashRing) DeleteItem(id string) {
@@ -106,7 +117,7 @@ func (r *HashRing) DeleteItem(id string) {
     if flag == false {
         child = r.vnodeArray.Successor(child)
     }
-    child.Item.(vnode).item[value] = false
+    child.Item.(*vnode).item[id] = false
 }
 
 
