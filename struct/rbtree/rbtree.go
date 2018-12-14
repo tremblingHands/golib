@@ -229,7 +229,7 @@ func (t *Rbtree) Max(x *Node) *Node{
 
 func (t *Rbtree) Search(key Item) (*Node, bool) {
     if key == nil {
-        return nil
+        return nil, false
     }
     return t.search(&Node{t.Nil,t.Nil,t.Nil,Red,key})
 }
