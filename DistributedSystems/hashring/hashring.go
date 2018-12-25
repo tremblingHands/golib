@@ -16,6 +16,7 @@ type vnode struct {
 
 type node struct {
     child []*vnode
+    id string
 }
 
 type HashRing struct {
@@ -24,7 +25,9 @@ type HashRing struct {
 }
 
 func newnode(id string) *node{
-    return &node{}
+    return &node{
+        id : id,
+    }
 }
 
 func newvnode(value uint32 ) *vnode{
@@ -60,7 +63,7 @@ func (r *HashRing) InsertNode(id string, weight int) {
     r.nodeArray[id] = parent
     cnt := 0
     for cnt < weight {
-        newid := id + ":" + strconv.Itoa(weight)
+        newid := id + ":" + strconv.Itoa(cnt)
         value := getHash(newid)
         child := newvnode(value)
         cnt++
@@ -73,14 +76,18 @@ func (r *HashRing) InsertNode(id string, weight int) {
 
 }
 
-func (r *HashRing) GetNode(id string) {
+func (r *HashRing) PrintNode(id string) {
     n := r.nodeArray[id]
     for _, child := range n.child {
+        fmt.Printf("%d : ", child.value)
+        /**
         for it, _ := range child.item {
             fmt.Print(it)
         }
+        **/
+        fmt.Println(child.item)
     }
-    fmt.Println()
+    //fmt.Println()
 }
 
 func (r *HashRing) DeleteNode(id string) {
@@ -107,6 +114,9 @@ func (r *HashRing) InsertItem(id string) {
     child, flag := r.vnodeArray.Search(newvnode(value))
     if flag == false {
         child = r.vnodeArray.Successor(child)
+        if child == r.vnodeArray.Nil {
+            child = r.vnodeArray.Root
+        }
     }
     child.Item.(*vnode).item[id] = true 
 }
